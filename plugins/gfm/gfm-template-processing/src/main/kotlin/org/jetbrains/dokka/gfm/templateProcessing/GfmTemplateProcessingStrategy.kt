@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin
-import org.jetbrains.dokka.allModulesPage.templates.TemplateProcessingStrategy
 import org.jetbrains.dokka.base.templating.parseJson
 import org.jetbrains.dokka.gfm.GfmCommand
 import org.jetbrains.dokka.gfm.GfmCommand.Companion.command
@@ -16,6 +15,7 @@ import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.plugin
 import org.jetbrains.dokka.plugability.querySingle
 import java.io.BufferedWriter
+import org.jetbrains.dokka.templates.TemplateProcessingStrategy
 import java.io.File
 
 class GfmTemplateProcessingStrategy(val context: DokkaContext) : TemplateProcessingStrategy {
