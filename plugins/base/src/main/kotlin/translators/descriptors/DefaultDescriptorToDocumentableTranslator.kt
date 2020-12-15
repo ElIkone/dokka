@@ -10,6 +10,7 @@ import org.jetbrains.dokka.analysis.from
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.parsers.MarkdownParser
 import org.jetbrains.dokka.base.translators.isDirectlyAnException
+import org.jetbrains.dokka.base.translators.unquotedValue
 import org.jetbrains.dokka.links.*
 import org.jetbrains.dokka.links.Callable
 import org.jetbrains.dokka.model.*
@@ -588,7 +589,7 @@ private class DokkaDescriptorVisitor(
         val name = run {
             val modifier = if (isGetter) "get" else "set"
             val rawName = propertyDescriptor.name.asString()
-            "$modifier${rawName[0].toUpperCase()}${rawName.drop(1)}"
+            "$modifier${rawName.capitalize()}"
         }
 
         val parameters =
@@ -782,8 +783,7 @@ private class DokkaDescriptorVisitor(
 
     private suspend fun org.jetbrains.kotlin.descriptors.annotations.Annotations.getPresentableName(): String? =
         map { it.toAnnotation() }.singleOrNull { it.dri.classNames == "ParameterName" }?.params?.get("name")
-            .safeAs<StringValue>()?.value?.drop(1)
-            ?.dropLast(1) // Dropping enclosing doublequotes because we don't want to have it in our custom signature serializer
+            .safeAs<StringValue>()?.value?.let { unquotedValue(it) }
 
     private suspend fun KotlinType.toBound(): Bound = when (this) {
 
@@ -929,12 +929,6 @@ private class DokkaDescriptorVisitor(
             }
         }
         else -> StringValue(unquotedValue(toString()))
-    }
-
-    private fun unquotedValue(value: String): String = if (value.startsWith('"') && value.endsWith('"')) {
-        if (value.length == 2) "" else value.substring(1, value.lastIndex)
-    } else {
-        value
     }
 
     private suspend fun AnnotationDescriptor.toAnnotation(scope: AnnotationScope = AnnotationScope.DIRECT): Annotations.Annotation {
